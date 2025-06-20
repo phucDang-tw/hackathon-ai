@@ -98,7 +98,7 @@ Database contains roles, skills, services and their relationships.`,
         const errorMessage =
           error instanceof Error ? error.message : "Unknown error";
 
-        console.log("Query error", error.message);
+        console.log("Query error", errorMessage);
         dataStream.writeData({
           type: "query-error",
           content: `Query failed: ${errorMessage}`,
@@ -109,7 +109,17 @@ Database contains roles, skills, services and their relationships.`,
           content: DATABASE_SCHEMA_PROMPT,
         });
 
-        throw new Error(`Database query failed: ${errorMessage}`);
+        // Return error information instead of throwing, so LLM can see and potentially retry
+        return {
+          query_description,
+          sql_query,
+          results_count: 0,
+          results: [],
+          summary: `Query failed: ${errorMessage}`,
+          error: true,
+          error_message: errorMessage,
+          schema_info: DATABASE_SCHEMA_PROMPT,
+        };
       }
     },
   });

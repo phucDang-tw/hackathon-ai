@@ -275,7 +275,7 @@ export const PreviewMessage = memo(
 );
 
 export const QueryResult = ({ result }: { result: any }) => {
-  const { query_description, sql_query, results_count, results, summary } = result;
+  const { query_description, sql_query, results_count, results, summary, error, error_message, schema_info } = result;
 
   // Extract dynamic columns from results
   const columns = results && results.length > 0 ? Object.keys(results[0]) : [];
@@ -284,15 +284,27 @@ export const QueryResult = ({ result }: { result: any }) => {
     <div className="space-y-4 p-4 border rounded-lg bg-card">
       <div className="space-y-2">
         <h3 className="text-lg font-semibold">{query_description}</h3>
-        <p className="text-sm text-muted-foreground italic">
-          {results_count} result{results_count !== 1 ? 's' : ''} found
-        </p>
+        {error ? (
+          <div className="space-y-2">
+            <p className="text-sm text-destructive italic font-medium">
+              ❌ Query failed
+            </p>
+            <div className="bg-destructive/10 border border-destructive/20 p-3 rounded-md">
+              <p className="text-sm text-destructive font-medium mb-1">Error:</p>
+              <p className="text-sm text-destructive">{error_message}</p>
+            </div>
+          </div>
+        ) : (
+          <p className="text-sm text-muted-foreground italic">
+            {results_count} result{results_count !== 1 ? 's' : ''} found
+          </p>
+        )}
       </div>
 
       <Collapsible>
         <CollapsibleTrigger className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
           <ChevronDownIcon size={16} />
-          View SQL Query & Summary
+          {error ? 'View SQL Query & Error Details' : 'View SQL Query & Summary'}
         </CollapsibleTrigger>
         <CollapsibleContent className="mt-2 space-y-2">
           <div className="bg-muted p-3 rounded-md">
@@ -300,13 +312,19 @@ export const QueryResult = ({ result }: { result: any }) => {
             <code className="text-sm font-mono">{sql_query}</code>
           </div>
           <div className="bg-muted p-3 rounded-md">
-            <p className="text-xs text-muted-foreground mb-1">Summary:</p>
+            <p className="text-xs text-muted-foreground mb-1">{error ? 'Error Details:' : 'Summary:'}</p>
             <p className="text-sm">{summary}</p>
           </div>
+          {error && schema_info && (
+            <div className="bg-muted p-3 rounded-md">
+              <p className="text-xs text-muted-foreground mb-1">Database Schema Reference:</p>
+              <pre className="text-xs font-mono whitespace-pre-wrap text-muted-foreground">{schema_info}</pre>
+            </div>
+          )}
         </CollapsibleContent>
       </Collapsible>
 
-      {results && results.length > 0 && (
+      {!error && results && results.length > 0 && (
         <div className="space-y-3">
           <div className="flex justify-between items-center">
             <h4 className="text-sm font-medium text-muted-foreground">Results Preview</h4>
@@ -376,6 +394,21 @@ export const QueryResult = ({ result }: { result: any }) => {
               </TableBody>
             </Table>
           </div>
+        </div>
+      )}
+
+      {!error && (!results || results.length === 0) && (
+        <div className="bg-muted/50 p-4 rounded-md text-center">
+          <p className="text-sm text-muted-foreground">No results found for this query.</p>
+        </div>
+      )}
+
+      {error && (
+        <div className="bg-blue-50 border border-blue-200 p-4 rounded-md">
+          <p className="text-sm text-blue-800">
+            💡 <strong>Tip:</strong> The AI can see this error and will try to fix the query automatically. 
+            You can also ask for help with the specific issue.
+          </p>
         </div>
       )}
     </div>
