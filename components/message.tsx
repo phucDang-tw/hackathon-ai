@@ -19,6 +19,27 @@ import { MessageEditor } from './message-editor';
 import { DocumentPreview } from './document-preview';
 import { MessageReasoning } from './message-reasoning';
 import type { UseChatHelpers } from '@ai-sdk/react';
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from './ui/collapsible';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from './ui/table';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from './ui/dialog';
+import { ChevronDownIcon } from './icons';
 
 const PurePreviewMessage = ({
   chatId,
@@ -254,7 +275,111 @@ export const PreviewMessage = memo(
 );
 
 export const QueryResult = ({ result }: { result: any }) => {
-  return <pre>{JSON.stringify(result, null, 2)}</pre>;
+  const { query_description, sql_query, results_count, results, summary } = result;
+
+  // Extract dynamic columns from results
+  const columns = results && results.length > 0 ? Object.keys(results[0]) : [];
+
+  return (
+    <div className="space-y-4 p-4 border rounded-lg bg-card">
+      <div className="space-y-2">
+        <h3 className="text-lg font-semibold">{query_description}</h3>
+        <p className="text-sm text-muted-foreground italic">
+          {results_count} result{results_count !== 1 ? 's' : ''} found
+        </p>
+      </div>
+
+      <Collapsible>
+        <CollapsibleTrigger className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
+          <ChevronDownIcon size={16} />
+          View SQL Query & Summary
+        </CollapsibleTrigger>
+        <CollapsibleContent className="mt-2 space-y-2">
+          <div className="bg-muted p-3 rounded-md">
+            <p className="text-xs text-muted-foreground mb-1">SQL Query:</p>
+            <code className="text-sm font-mono">{sql_query}</code>
+          </div>
+          <div className="bg-muted p-3 rounded-md">
+            <p className="text-xs text-muted-foreground mb-1">Summary:</p>
+            <p className="text-sm">{summary}</p>
+          </div>
+        </CollapsibleContent>
+      </Collapsible>
+
+      {results && results.length > 0 && (
+        <div className="space-y-3">
+          <div className="flex justify-between items-center">
+            <h4 className="text-sm font-medium text-muted-foreground">Results Preview</h4>
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button variant="outline" size="sm">
+                  Expand Full Table
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-6xl max-h-[80vh] overflow-auto">
+                <DialogHeader>
+                  <DialogTitle>{query_description}</DialogTitle>
+                </DialogHeader>
+                <div className="mt-4">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        {columns.map((column) => (
+                          <TableHead key={column} className="capitalize min-w-32">
+                            {column.replace(/_/g, ' ')}
+                          </TableHead>
+                        ))}
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {results.map((row: any, index: number) => (
+                        <TableRow key={index}>
+                          {columns.map((column) => (
+                            <TableCell key={column} className="align-top">
+                              <div className="break-words whitespace-pre-wrap">
+                                {row[column]}
+                              </div>
+                            </TableCell>
+                          ))}
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              </DialogContent>
+            </Dialog>
+          </div>
+          
+          <div className="rounded-md border">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  {columns.map((column) => (
+                    <TableHead key={column} className="capitalize">
+                      {column.replace(/_/g, ' ')}
+                    </TableHead>
+                  ))}
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {results.map((row: any, index: number) => (
+                  <TableRow key={index}>
+                    {columns.map((column) => (
+                      <TableCell key={column} className="max-w-md">
+                        <div className="truncate" title={row[column]}>
+                          {row[column]}
+                        </div>
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        </div>
+      )}
+    </div>
+  );
 };
 
 export const ThinkingMessage = () => {

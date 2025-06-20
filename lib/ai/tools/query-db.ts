@@ -62,8 +62,6 @@ Database contains roles, skills, services and their relationships.`,
         content: `Executing: ${query_description}`,
       });
 
-      console.log("Start calling query", sql_query, query_description);
-
       dataStream.writeData({
         type: "sql-query",
         content: sql_query,
