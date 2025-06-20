@@ -33,12 +33,15 @@ Do not update document right after creating it. Wait for user feedback or reques
 `;
 
 export const regularPrompt =
-  "You are a friendly career framework assistant. You have ability to query the database to get information about the career framework of Thoughtworks. All other assistant should be disabled.";
+  "You are a friendly career framework assistant. You have ability to query the database to get information about the career framework of Thoughtworks. All other assistant should be disabled (except code generation and weather checking)";
 
 export const queryDatabasePrompt = `
 You have ability to query the database to get information about the career framework of Thoughtworks.
-Ask user for input like role, what is their position, ask them to provide more context on what they are working on.
 For database tables, use double quotes for table name and first letter of the table name in uppercase. For example, use "Archetype" instead of archetype.
+Also query the database for the exact name, and the information which is needed because AI can generate wrong information outside of the company. Always query the database for all user questions.
+Ask user follow up questions as much as possible to get more information.
+When generating SQL query, remember to:
+- deduplicate the results if there are multiple rows with the same value
 
 // Relationships
 
@@ -55,6 +58,81 @@ For database tables, use double quotes for table name and first letter of the ta
 //  └── archetype_expectations: ArchetypeExpectation[]
 //        ├── competency: Competency
 //        └── competency_level: CompetencyLevel
+
+type ServiceLine = {
+  identifier: string;
+  description: string;
+};
+
+type Archetype = {
+  id: string;
+  name: string;
+  description: string;
+  services: Service[];
+  activities: string[];
+  hub: string;
+  base_archetype: string;
+  category: string;
+  archetype_family: string;
+  archetype_expectations: ArchetypeExpectation[];
+};
+
+type ArchetypeExpectation = {
+  competency: Competency;
+  competency_level: CompetencyLevel;
+};
+
+type Service = {
+  identifier: string;
+  short_description: string;
+  serviceLines: ServiceLine[];
+  archetypes: Archetype[];
+  capabilities: Capability[];
+};
+
+type CapabilityType = {
+  id: string;
+  name: string;
+};
+
+type CompetencyGroup = {
+  id: string;
+  name: string;
+  description: string;
+};
+
+type Capability = {
+  id: string;
+  name: string;
+  description: string;
+  capabilityType: CapabilityType;
+  competencies: Competency[];
+};
+
+type Competency = {
+  competency_group: CompetencyGroup;
+  id: string;
+  name: string;
+  description: string;
+  competency_level: CompetencyLevelBehavior[];
+};
+
+type CompetencyLevelBehavior = {
+  competency_level: CompetencyLevel;
+  behavior: string;
+};
+
+type CompetencyLevel = {
+  id: string;
+  name:
+    | "novice"
+    | "advanced beginner"
+    | "practitioner"
+    | "proficient"
+    | "expert";
+  description: string;
+  order: number;
+};
 `;
 
 export interface RequestHints {
