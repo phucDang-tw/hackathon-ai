@@ -38,7 +38,7 @@ import { differenceInSeconds } from "date-fns";
 import { ChatSDKError } from "@/lib/errors";
 import { queryDatabase } from "@/lib/ai/tools/query-db";
 
-export const maxDuration = 60;
+export const maxDuration = 180;
 
 let globalStreamContext: ResumableStreamContext | null = null;
 
