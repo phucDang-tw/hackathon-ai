@@ -19,24 +19,24 @@ function PureSuggestedActions({
 }: SuggestedActionsProps) {
   const suggestedActions = [
     {
-      title: 'What are the advantages',
-      label: 'of using Next.js?',
-      action: 'What are the advantages of using Next.js?',
+      title: 'Show me all available',
+      label: 'career archetypes',
+      action: 'Show me all available career archetypes in the database',
     },
     {
-      title: 'Write code to',
-      label: `demonstrate djikstra's algorithm`,
-      action: `Write code to demonstrate djikstra's algorithm`,
+      title: 'What competencies are needed',
+      label: 'for a Software Engineer?',
+      action: 'What competencies are needed for a Software Engineer archetype?',
     },
     {
-      title: 'Help me write an essay',
-      label: `about silicon valley`,
-      action: `Help me write an essay about silicon valley`,
+      title: 'Help me build a career path',
+      label: 'from novice to expert',
+      action: 'Help me build a career path from novice to expert level in technology',
     },
     {
-      title: 'What is the weather',
-      label: 'in San Francisco?',
-      action: 'What is the weather in San Francisco?',
+      title: 'What services can I work on',
+      label: 'as a Platform Engineer?',
+      action: 'What services can I work on as a Platform Engineer?',
     },
   ];
 
