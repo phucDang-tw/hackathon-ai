@@ -45,100 +45,172 @@ You can query database multiple times, so don't be rush, await for the first too
 When generating SQL query, remember to:
 - deduplicate the results if there are multiple rows with the same value
 - table name don't include underscores, and camel cases
-
+- for nested archetype (because of base archetype), you need to run multiple queries to get all the competencies.
 When user claim their role, you need to query database yourself for all archetypes, and then get the most relevant archetype for them.
 And then load all the competencies later (next tool call).
 
-// Relationships
+All tables in the database: 
+- Archetype, ArchetypeExpectation, ArchetypeService, 
+- Capability, CapabilityType, CapabilityCompetency
+- Competency, CompetencyGroup, CompetencyLevel, CompetencyLevelBehavior
+- Service, ServiceLine, ServiceCapability, ServiceServiceLine
 
-// Archetype
-//  ├── services: Service[]
-//  │     ├── serviceLines: ServiceLine[]
-//  │     ├── archetypes: Archetype[] 🔁
-//  │     └── capabilities: Capability[]
-//  │           ├── capabilityType: CapabilityType
-//  │           └── competencies: Competency[]
-//  │                 ├── competency_group: CompetencyGroup
-//  │                 └── competency_level: CompetencyLevelBehavior[]
-//  │                       └── competency_level: CompetencyLevel
-//  └── archetype_expectations: ArchetypeExpectation[]
-//        ├── competency: Competency
-//        └── competency_level: CompetencyLevel
+# Relationships
 
-type ServiceLine = {
-  identifier: string;
-  description: string;
-};
-
-type Archetype = {
-  id: string;
-  name: string;
-  description: string;
-  services: Service[];
-  activities: string[];
-  hub: string;
-  base_archetype: string;
-  category: string;
-  archetype_family: string;
-  archetype_expectations: ArchetypeExpectation[];
-};
-
-type ArchetypeExpectation = {
-  competency: Competency;
-  competency_level: CompetencyLevel;
-};
-
-type Service = {
-  identifier: string;
-  short_description: string;
-  serviceLines: ServiceLine[];
-  archetypes: Archetype[];
-  capabilities: Capability[];
-};
-
-type CapabilityType = {
-  id: string;
-  name: string;
-};
-
-type CompetencyGroup = {
-  id: string;
-  name: string;
-  description: string;
-};
-
-type Capability = {
-  id: string;
-  name: string;
-  description: string;
-  capabilityType: CapabilityType;
-  competencies: Competency[];
-};
-
-type Competency = {
-  competency_group: CompetencyGroup;
-  id: string;
-  name: string;
-  description: string;
-  competency_level: CompetencyLevelBehavior[];
-};
-
-type CompetencyLevelBehavior = {
-  competency_level: CompetencyLevel;
-  behavior: string;
-};
-
-type CompetencyLevel = {
-  id: string;
-  name:
-    | "novice"
-    | "advanced beginner"
-    | "practitioner"
-    | "proficient"
-    | "expert";
-  description: string;
-  order: number;
-};
+Archetype
+ ├── services: Service[]
+ │     ├── serviceLines: ServiceLine[]
+ │     ├── archetypes: Archetype[] 🔁
+ │     └── capabilities: Capability[]
+ │           ├── capabilityType: CapabilityType
+ │           └── competencies: Competency[]
+ │                 ├── competency_group: CompetencyGroup
+ │                 └── competency_level: CompetencyLevelBehavior[]
+ │                       └── competency_level: CompetencyLevel
+ └── archetype_expectations: ArchetypeExpectation[]
+       ├── competency: Competency
+       └── competency_level: CompetencyLevel
+[
+  {
+    "tableName": "Archetype",
+    "columns": [
+      {"name": "id", "type": "varchar(255)", "isPrimaryKey": true},
+      {"name": "name", "type": "varchar(255)"},
+      {"name": "description", "type": "text"},
+      {"name": "activities", "type": "json"},
+      {"name": "hub", "type": "varchar(255)"},
+      {"name": "base_archetype_id", "type": "varchar(255)", "isForeignKey": true, "references": "Archetype(id)"},
+      {"name": "category", "type": "varchar(255)"},
+      {"name": "archetype_family", "type": "varchar(255)"},
+      {"name": "created_at", "type": "timestamp"},
+      {"name": "updated_at", "type": "timestamp"}
+    ]
+  },
+  {
+    "tableName": "ArchetypeExpectation",
+    "columns": [
+      {"name": "id", "type": "uuid", "isPrimaryKey": true},
+      {"name": "archetype_id", "type": "varchar(255)", "isForeignKey": true, "references": "Archetype(id)"},
+      {"name": "competency_id", "type": "varchar(255)", "isForeignKey": true, "references": "Competency(id)"},
+      {"name": "competency_level_id", "type": "varchar(255)", "isForeignKey": true, "references": "CompetencyLevel(id)"},
+      {"name": "created_at", "type": "timestamp"},
+      {"name": "updated_at", "type": "timestamp"}
+    ]
+  },
+  {
+    "tableName": "ArchetypeService",
+    "columns": [
+      {"name": "archetype_id", "type": "varchar(255)", "isPrimaryKey": true, "isForeignKey": true, "references": "Archetype(id)"},
+      {"name": "service_identifier", "type": "varchar(255)", "isPrimaryKey": true, "isForeignKey": true, "references": "Service(identifier)"}
+    ],
+    "primaryKeyConstraint": ["archetype_id", "service_identifier"]
+  },
+  {
+    "tableName": "Capability",
+    "columns": [
+      {"name": "id", "type": "varchar(255)", "isPrimaryKey": true},
+      {"name": "name", "type": "varchar(255)"},
+      {"name": "description", "type": "text"},
+      {"name": "capability_type_id", "type": "varchar(255)", "isForeignKey": true, "references": "CapabilityType(id)"},
+      {"name": "created_at", "type": "timestamp"},
+      {"name": "updated_at", "type": "timestamp"}
+    ]
+  },
+  {
+    "tableName": "CapabilityCompetency",
+    "columns": [
+      {"name": "capability_id", "type": "varchar(255)", "isPrimaryKey": true, "isForeignKey": true, "references": "Capability(id)"},
+      {"name": "competency_id", "type": "varchar(255)", "isPrimaryKey": true, "isForeignKey": true, "references": "Competency(id)"}
+    ],
+    "primaryKeyConstraint": ["capability_id", "competency_id"]
+  },
+  {
+    "tableName": "CapabilityType",
+    "columns": [
+      {"name": "id", "type": "varchar(255)", "isPrimaryKey": true},
+      {"name": "name", "type": "varchar(255)"},
+      {"name": "created_at", "type": "timestamp"},
+      {"name": "updated_at", "type": "timestamp"}
+    ]
+  },
+  {
+    "tableName": "Competency",
+    "columns": [
+      {"name": "id", "type": "varchar(255)", "isPrimaryKey": true},
+      {"name": "name", "type": "varchar(255)"},
+      {"name": "description", "type": "text"},
+      {"name": "competency_group_id", "type": "varchar(255)", "isForeignKey": true, "references": "CompetencyGroup(id)"},
+      {"name": "created_at", "type": "timestamp"},
+      {"name": "updated_at", "type": "timestamp"}
+    ]
+  },
+  {
+    "tableName": "CompetencyGroup",
+    "columns": [
+      {"name": "id", "type": "varchar(255)", "isPrimaryKey": true},
+      {"name": "name", "type": "varchar(255)"},
+      {"name": "description", "type": "text"},
+      {"name": "created_at", "type": "timestamp"},
+      {"name": "updated_at", "type": "timestamp"}
+    ]
+  },
+  {
+    "tableName": "CompetencyLevel",
+    "columns": [
+      {"name": "id", "type": "varchar(255)", "isPrimaryKey": true},
+      {"name": "name", "type": "varchar"},
+      {"name": "description", "type": "text"},
+      {"name": "order", "type": "integer"},
+      {"name": "created_at", "type": "timestamp"},
+      {"name": "updated_at", "type": "timestamp"}
+    ]
+  },
+  {
+    "tableName": "CompetencyLevelBehavior",
+    "columns": [
+      {"name": "id", "type": "uuid", "isPrimaryKey": true},
+      {"name": "competency_id", "type": "varchar(255)", "isForeignKey": true, "references": "Competency(id)"},
+      {"name": "competency_level_id", "type": "varchar(255)", "isForeignKey": true, "references": "CompetencyLevel(id)"},
+      {"name": "behavior", "type": "text"},
+      {"name": "created_at", "type": "timestamp"},
+      {"name": "updated_at", "type": "timestamp"}
+    ]
+  },
+  {
+    "tableName": "Service",
+    "columns": [
+      {"name": "identifier", "type": "varchar(255)", "isPrimaryKey": true},
+      {"name": "short_description", "type": "text"},
+      {"name": "created_at", "type": "timestamp"},
+      {"name": "updated_at", "type": "timestamp"}
+    ]
+  },
+  {
+    "tableName": "ServiceCapability",
+    "columns": [
+      {"name": "service_identifier", "type": "varchar(255)", "isPrimaryKey": true, "isForeignKey": true, "references": "Service(identifier)"},
+      {"name": "capability_id", "type": "varchar(255)", "isPrimaryKey": true, "isForeignKey": true, "references": "Capability(id)"}
+    ],
+    "primaryKeyConstraint": ["service_identifier", "capability_id"]
+  },
+  {
+    "tableName": "ServiceLine",
+    "columns": [
+      {"name": "identifier", "type": "varchar(255)", "isPrimaryKey": true},
+      {"name": "description", "type": "text"},
+      {"name": "created_at", "type": "timestamp"},
+      {"name": "updated_at", "type": "timestamp"}
+    ]
+  },
+  {
+    "tableName": "ServiceServiceLine",
+    "columns": [
+      {"name": "service_identifier", "type": "varchar(255)", "isPrimaryKey": true, "isForeignKey": true, "references": "Service(identifier)"},
+      {"name": "service_line_identifier", "type": "varchar(255)", "isPrimaryKey": true, "isForeignKey": true, "references": "ServiceLine(identifier)"}
+    ],
+    "primaryKeyConstraint": ["service_identifier", "service_line_identifier"]
+  }
+]
 `;
 
 export interface RequestHints {
