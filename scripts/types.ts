@@ -26,7 +26,7 @@ type Archetype = {
   services: Service[];
   activities: string[];
   hub: string;
-  base_archetype: Archetype;
+  base_archetype: string;
   category: string;
   archetype_family: string;
   archetype_expectations: ArchetypeExpectation[];
@@ -35,7 +35,6 @@ type Archetype = {
 type ArchetypeExpectation = {
   competency: Competency;
   competency_level: CompetencyLevel;
-  behavior: string;
 };
 
 type Service = {

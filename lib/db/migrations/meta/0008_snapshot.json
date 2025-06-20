@@ -105,12 +105,6 @@
           "primaryKey": false,
           "notNull": true
         },
-        "behavior": {
-          "name": "behavior",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
         "created_at": {
           "name": "created_at",
           "type": "timestamp",
@@ -132,12 +126,8 @@
           "name": "ArchetypeExpectation_archetype_id_Archetype_id_fk",
           "tableFrom": "ArchetypeExpectation",
           "tableTo": "Archetype",
-          "columnsFrom": [
-            "archetype_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["archetype_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -145,12 +135,8 @@
           "name": "ArchetypeExpectation_competency_id_Competency_id_fk",
           "tableFrom": "ArchetypeExpectation",
           "tableTo": "Competency",
-          "columnsFrom": [
-            "competency_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["competency_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -158,12 +144,8 @@
           "name": "ArchetypeExpectation_competency_level_id_CompetencyLevel_id_fk",
           "tableFrom": "ArchetypeExpectation",
           "tableTo": "CompetencyLevel",
-          "columnsFrom": [
-            "competency_level_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["competency_level_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -194,12 +176,8 @@
           "name": "ArchetypeService_archetype_id_Archetype_id_fk",
           "tableFrom": "ArchetypeService",
           "tableTo": "Archetype",
-          "columnsFrom": [
-            "archetype_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["archetype_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -207,12 +185,8 @@
           "name": "ArchetypeService_service_identifier_Service_identifier_fk",
           "tableFrom": "ArchetypeService",
           "tableTo": "Service",
-          "columnsFrom": [
-            "service_identifier"
-          ],
-          "columnsTo": [
-            "identifier"
-          ],
+          "columnsFrom": ["service_identifier"],
+          "columnsTo": ["identifier"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -220,10 +194,7 @@
       "compositePrimaryKeys": {
         "ArchetypeService_archetype_id_service_identifier_pk": {
           "name": "ArchetypeService_archetype_id_service_identifier_pk",
-          "columns": [
-            "archetype_id",
-            "service_identifier"
-          ]
+          "columns": ["archetype_id", "service_identifier"]
         }
       },
       "uniqueConstraints": {}
@@ -277,12 +248,8 @@
           "name": "Capability_capability_type_id_CapabilityType_id_fk",
           "tableFrom": "Capability",
           "tableTo": "CapabilityType",
-          "columnsFrom": [
-            "capability_type_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["capability_type_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -313,12 +280,8 @@
           "name": "CapabilityCompetency_capability_id_Capability_id_fk",
           "tableFrom": "CapabilityCompetency",
           "tableTo": "Capability",
-          "columnsFrom": [
-            "capability_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["capability_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -326,12 +289,8 @@
           "name": "CapabilityCompetency_competency_id_Competency_id_fk",
           "tableFrom": "CapabilityCompetency",
           "tableTo": "Competency",
-          "columnsFrom": [
-            "competency_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["competency_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -339,10 +298,7 @@
       "compositePrimaryKeys": {
         "CapabilityCompetency_capability_id_competency_id_pk": {
           "name": "CapabilityCompetency_capability_id_competency_id_pk",
-          "columns": [
-            "capability_id",
-            "competency_id"
-          ]
+          "columns": ["capability_id", "competency_id"]
         }
       },
       "uniqueConstraints": {}
@@ -426,12 +382,8 @@
           "name": "Chat_userId_User_id_fk",
           "tableFrom": "Chat",
           "tableTo": "User",
-          "columnsFrom": [
-            "userId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["userId"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -488,12 +440,8 @@
           "name": "Competency_competency_group_id_CompetencyGroup_id_fk",
           "tableFrom": "Competency",
           "tableTo": "CompetencyGroup",
-          "columnsFrom": [
-            "competency_group_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["competency_group_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -641,12 +589,8 @@
           "name": "CompetencyLevelBehavior_competency_id_Competency_id_fk",
           "tableFrom": "CompetencyLevelBehavior",
           "tableTo": "Competency",
-          "columnsFrom": [
-            "competency_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["competency_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -654,12 +598,8 @@
           "name": "CompetencyLevelBehavior_competency_level_id_CompetencyLevel_id_fk",
           "tableFrom": "CompetencyLevelBehavior",
           "tableTo": "CompetencyLevel",
-          "columnsFrom": [
-            "competency_level_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["competency_level_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -716,12 +656,8 @@
           "name": "Document_userId_User_id_fk",
           "tableFrom": "Document",
           "tableTo": "User",
-          "columnsFrom": [
-            "userId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["userId"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -729,10 +665,7 @@
       "compositePrimaryKeys": {
         "Document_id_createdAt_pk": {
           "name": "Document_id_createdAt_pk",
-          "columns": [
-            "id",
-            "createdAt"
-          ]
+          "columns": ["id", "createdAt"]
         }
       },
       "uniqueConstraints": {}
@@ -888,12 +821,8 @@
           "name": "Message_v2_chatId_Chat_id_fk",
           "tableFrom": "Message_v2",
           "tableTo": "Chat",
-          "columnsFrom": [
-            "chatId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["chatId"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -943,12 +872,8 @@
           "name": "Message_chatId_Chat_id_fk",
           "tableFrom": "Message",
           "tableTo": "Chat",
-          "columnsFrom": [
-            "chatId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["chatId"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -1015,12 +940,8 @@
           "name": "ServiceCapability_service_identifier_Service_identifier_fk",
           "tableFrom": "ServiceCapability",
           "tableTo": "Service",
-          "columnsFrom": [
-            "service_identifier"
-          ],
-          "columnsTo": [
-            "identifier"
-          ],
+          "columnsFrom": ["service_identifier"],
+          "columnsTo": ["identifier"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -1028,12 +949,8 @@
           "name": "ServiceCapability_capability_id_Capability_id_fk",
           "tableFrom": "ServiceCapability",
           "tableTo": "Capability",
-          "columnsFrom": [
-            "capability_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["capability_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -1041,10 +958,7 @@
       "compositePrimaryKeys": {
         "ServiceCapability_service_identifier_capability_id_pk": {
           "name": "ServiceCapability_service_identifier_capability_id_pk",
-          "columns": [
-            "service_identifier",
-            "capability_id"
-          ]
+          "columns": ["service_identifier", "capability_id"]
         }
       },
       "uniqueConstraints": {}
@@ -1108,12 +1022,8 @@
           "name": "ServiceServiceLine_service_identifier_Service_identifier_fk",
           "tableFrom": "ServiceServiceLine",
           "tableTo": "Service",
-          "columnsFrom": [
-            "service_identifier"
-          ],
-          "columnsTo": [
-            "identifier"
-          ],
+          "columnsFrom": ["service_identifier"],
+          "columnsTo": ["identifier"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -1121,12 +1031,8 @@
           "name": "ServiceServiceLine_service_line_identifier_ServiceLine_identifier_fk",
           "tableFrom": "ServiceServiceLine",
           "tableTo": "ServiceLine",
-          "columnsFrom": [
-            "service_line_identifier"
-          ],
-          "columnsTo": [
-            "identifier"
-          ],
+          "columnsFrom": ["service_line_identifier"],
+          "columnsTo": ["identifier"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -1134,10 +1040,7 @@
       "compositePrimaryKeys": {
         "ServiceServiceLine_service_identifier_service_line_identifier_pk": {
           "name": "ServiceServiceLine_service_identifier_service_line_identifier_pk",
-          "columns": [
-            "service_identifier",
-            "service_line_identifier"
-          ]
+          "columns": ["service_identifier", "service_line_identifier"]
         }
       },
       "uniqueConstraints": {}
@@ -1172,12 +1075,8 @@
           "name": "Stream_chatId_Chat_id_fk",
           "tableFrom": "Stream",
           "tableTo": "Chat",
-          "columnsFrom": [
-            "chatId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["chatId"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -1185,9 +1084,7 @@
       "compositePrimaryKeys": {
         "Stream_id_pk": {
           "name": "Stream_id_pk",
-          "columns": [
-            "id"
-          ]
+          "columns": ["id"]
         }
       },
       "uniqueConstraints": {}
@@ -1259,12 +1156,8 @@
           "name": "Suggestion_userId_User_id_fk",
           "tableFrom": "Suggestion",
           "tableTo": "User",
-          "columnsFrom": [
-            "userId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["userId"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -1272,14 +1165,8 @@
           "name": "Suggestion_documentId_documentCreatedAt_Document_id_createdAt_fk",
           "tableFrom": "Suggestion",
           "tableTo": "Document",
-          "columnsFrom": [
-            "documentId",
-            "documentCreatedAt"
-          ],
-          "columnsTo": [
-            "id",
-            "createdAt"
-          ],
+          "columnsFrom": ["documentId", "documentCreatedAt"],
+          "columnsTo": ["id", "createdAt"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -1287,9 +1174,7 @@
       "compositePrimaryKeys": {
         "Suggestion_id_pk": {
           "name": "Suggestion_id_pk",
-          "columns": [
-            "id"
-          ]
+          "columns": ["id"]
         }
       },
       "uniqueConstraints": {}
@@ -1352,12 +1237,8 @@
           "name": "Vote_v2_chatId_Chat_id_fk",
           "tableFrom": "Vote_v2",
           "tableTo": "Chat",
-          "columnsFrom": [
-            "chatId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["chatId"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -1365,12 +1246,8 @@
           "name": "Vote_v2_messageId_Message_v2_id_fk",
           "tableFrom": "Vote_v2",
           "tableTo": "Message_v2",
-          "columnsFrom": [
-            "messageId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["messageId"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -1378,10 +1255,7 @@
       "compositePrimaryKeys": {
         "Vote_v2_chatId_messageId_pk": {
           "name": "Vote_v2_chatId_messageId_pk",
-          "columns": [
-            "chatId",
-            "messageId"
-          ]
+          "columns": ["chatId", "messageId"]
         }
       },
       "uniqueConstraints": {}
@@ -1415,12 +1289,8 @@
           "name": "Vote_chatId_Chat_id_fk",
           "tableFrom": "Vote",
           "tableTo": "Chat",
-          "columnsFrom": [
-            "chatId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["chatId"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -1428,12 +1298,8 @@
           "name": "Vote_messageId_Message_id_fk",
           "tableFrom": "Vote",
           "tableTo": "Message",
-          "columnsFrom": [
-            "messageId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["messageId"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -1441,10 +1307,7 @@
       "compositePrimaryKeys": {
         "Vote_chatId_messageId_pk": {
           "name": "Vote_chatId_messageId_pk",
-          "columns": [
-            "chatId",
-            "messageId"
-          ]
+          "columns": ["chatId", "messageId"]
         }
       },
       "uniqueConstraints": {}

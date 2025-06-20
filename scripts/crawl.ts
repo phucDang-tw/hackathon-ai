@@ -23,7 +23,9 @@ const connection = postgres(process.env.POSTGRES_URL!, { max: 1 });
 const db = drizzle(connection);
 
 // Add your cookies here - copy from browser dev tools
-const COOKIES = process.env.CAPABLE_COOKIES || ``;
+const COOKIES =
+  process.env.CAPABLE_COOKIES ||
+  `_pk_id.34.7f86=df4187f49dece6e1.1750146364.; _gid=GA1.2.377795281.1750255985; _ga_RN24SMN5LX=GS2.1.s1750255984$o47$g0$t1750257526$j60$l0$h0; _ga=GA1.2.951462832.1735800728; _ga_4PMZZ3YZW8=GS2.1.s1750325060$o4$g1$t1750325123$j60$l0$h0; _ga_ZK29164C94=GS2.1.s1750325060$o4$g1$t1750325127$j60$l0$h0; connect.sid=s%3Apmfi9m3HrOY4zNaiso9yvCEooNnAI03f.7bwQ4n58LXpBO0ZczywEdJEfnY9D4Bmy6wpHdUBr868`;
 
 const BASE_URL = "https://capable.thoughtworks.net/api";
 
@@ -255,86 +257,85 @@ async function saveCompetencies(items: any[]) {
 
 async function saveArchetypes(items: any[]) {
   console.log(`💾 Saving ${items.length} archetypes...`);
+  await Promise.all(
+    items.map(async (item) => {
+      try {
+        // First fetch detailed archetype data
+        const detailedArchetype = await fetchWithCookies(
+          `${BASE_URL}/archetypes/${item.identifier}`
+        );
 
-  for (const item of items) {
-    try {
-      // First fetch detailed archetype data
-      const detailedArchetype = await fetchWithCookies(
-        `${BASE_URL}/archetypes/${item.id}`
-      );
+        if (detailedArchetype) {
+          await db
+            .insert(archetype)
+            .values({
+              id: detailedArchetype.identifier,
+              name: detailedArchetype.name,
+              description: detailedArchetype.description,
+              activities: detailedArchetype.activities || [],
+              hub: detailedArchetype.hub,
+              baseArchetypeId: detailedArchetype.base_archetype?.id,
+              category: detailedArchetype.category,
+              archetypeFamily: detailedArchetype.archetype_family,
+            })
+            .onConflictDoNothing();
 
-      if (detailedArchetype) {
-        await db
-          .insert(archetype)
-          .values({
-            id: detailedArchetype.id,
-            name: detailedArchetype.name,
-            description: detailedArchetype.description,
-            activities: detailedArchetype.activities || [],
-            hub: detailedArchetype.hub,
-            baseArchetypeId: detailedArchetype.base_archetype?.id,
-            category: detailedArchetype.category,
-            archetypeFamily: detailedArchetype.archetype_family,
-          })
-          .onConflictDoNothing();
-
-        // Save archetype expectations
-        if (
-          detailedArchetype.archetype_expectations &&
-          Array.isArray(detailedArchetype.archetype_expectations)
-        ) {
-          for (const expectation of detailedArchetype.archetype_expectations) {
-            try {
-              await db
-                .insert(archetypeExpectation)
-                .values({
-                  archetypeId: detailedArchetype.id,
-                  competencyId:
-                    expectation.competency?.id || expectation.competency_id,
-                  competencyLevelId:
-                    expectation.competency_level?.id ||
-                    expectation.competency_level_id,
-                  behavior: expectation.behavior,
-                })
-                .onConflictDoNothing();
-            } catch (error) {
-              console.error(`❌ Error saving archetype expectation:`, error);
+          // Save archetype expectations
+          if (
+            detailedArchetype.archetype_expectations &&
+            Array.isArray(detailedArchetype.archetype_expectations)
+          ) {
+            for (const expectation of detailedArchetype.archetype_expectations) {
+              try {
+                await db
+                  .insert(archetypeExpectation)
+                  .values({
+                    archetypeId: detailedArchetype.identifier,
+                    competencyId:
+                      expectation.competency?.identifier ||
+                      expectation.competency_id,
+                    competencyLevelId: expectation.competency_level.id,
+                  })
+                  .onConflictDoNothing();
+              } catch (error) {
+                console.error(`❌ Error saving archetype expectation:`, error);
+              }
             }
           }
-        }
 
-        // Save archetype-service relationships
-        if (
-          detailedArchetype.services &&
-          Array.isArray(detailedArchetype.services)
-        ) {
-          for (const srv of detailedArchetype.services) {
-            try {
-              await db
-                .insert(archetypeService)
-                .values({
-                  archetypeId: detailedArchetype.id,
-                  serviceIdentifier: srv.identifier || srv.id,
-                })
-                .onConflictDoNothing();
-            } catch (error) {
-              console.error(
-                `❌ Error saving archetype-service relationship:`,
-                error
-              );
+          // Save archetype-service relationships
+          if (
+            detailedArchetype.services &&
+            Array.isArray(detailedArchetype.services)
+          ) {
+            for (const srv of detailedArchetype.services) {
+              try {
+                await db
+                  .insert(archetypeService)
+                  .values({
+                    archetypeId: detailedArchetype.identifier,
+                    serviceIdentifier: srv.identifier || srv.id,
+                  })
+                  .onConflictDoNothing();
+              } catch (error) {
+                console.error(
+                  `❌ Error saving archetype-service relationship:`,
+                  error
+                );
+              }
             }
           }
+
+          console.log(`✅ Saved archetype: ${detailedArchetype.name}`);
         }
 
-        console.log(`✅ Saved archetype: ${detailedArchetype.name}`);
+        // Rate limiting
+        await new Promise((resolve) => setTimeout(resolve, 200));
+      } catch (error) {
+        console.error(`❌ Error saving archetype ${item.id}:`, error);
       }
-
-      // Rate limiting
-      await new Promise((resolve) => setTimeout(resolve, 200));
-    } catch (error) {
-      console.error(`❌ Error saving archetype ${item.id}:`, error);
-    }
-  }
+    })
+  );
 }
 
 async function main() {
@@ -350,59 +351,59 @@ async function main() {
 
   try {
     // 1. Fetch and save service lines
-    console.log("\n🚀 Fetching service lines...");
-    const serviceLines = await fetchWithCookies(`${BASE_URL}/service_lines`);
-    if (serviceLines && serviceLines.length > 0) {
-      await saveServiceLines(serviceLines);
-    }
+    // console.log("\n🚀 Fetching service lines...");
+    // const serviceLines = await fetchWithCookies(`${BASE_URL}/service_lines`);
+    // if (serviceLines && serviceLines.length > 0) {
+    //   await saveServiceLines(serviceLines);
+    // }
 
-    // 2. Fetch and save services
-    console.log("\n🚀 Fetching services...");
-    const services = await fetchWithCookies(`${BASE_URL}/services`);
-    if (services && services.length > 0) {
-      await saveServices(services);
-    }
+    // // 2. Fetch and save services
+    // console.log("\n🚀 Fetching services...");
+    // const services = await fetchWithCookies(`${BASE_URL}/services`);
+    // if (services && services.length > 0) {
+    //   await saveServices(services);
+    // }
 
-    // 3. Fetch and save capability types
-    console.log("\n🚀 Fetching capability types...");
-    const capabilityTypes = await fetchWithCookies(
-      `${BASE_URL}/capability_types`
-    );
-    if (capabilityTypes && capabilityTypes.length > 0) {
-      await saveCapabilityTypes(capabilityTypes);
-    }
+    // // 3. Fetch and save capability types
+    // console.log("\n🚀 Fetching capability types...");
+    // const capabilityTypes = await fetchWithCookies(
+    //   `${BASE_URL}/capability_types`
+    // );
+    // if (capabilityTypes && capabilityTypes.length > 0) {
+    //   await saveCapabilityTypes(capabilityTypes);
+    // }
 
-    // 4. Fetch and save competency groups
-    console.log("\n🚀 Fetching competency groups...");
-    const competencyGroups = await fetchWithCookies(
-      `${BASE_URL}/competency_groups`
-    );
-    if (competencyGroups && competencyGroups.length > 0) {
-      await saveCompetencyGroups(competencyGroups);
-    }
+    // // 4. Fetch and save competency groups
+    // console.log("\n🚀 Fetching competency groups...");
+    // const competencyGroups = await fetchWithCookies(
+    //   `${BASE_URL}/competency_groups`
+    // );
+    // if (competencyGroups && competencyGroups.length > 0) {
+    //   await saveCompetencyGroups(competencyGroups);
+    // }
 
-    // 5. Fetch and save competency levels (if endpoint exists)
-    console.log("\n🚀 Fetching competency levels...");
-    const competencyLevels = await fetchWithCookies(
-      `${BASE_URL}/competency_levels`
-    );
-    if (competencyLevels && competencyLevels.length > 0) {
-      await saveCompetencyLevels(competencyLevels);
-    }
+    // // 5. Fetch and save competency levels (if endpoint exists)
+    // console.log("\n🚀 Fetching competency levels...");
+    // const competencyLevels = await fetchWithCookies(
+    //   `${BASE_URL}/competency_levels`
+    // );
+    // if (competencyLevels && competencyLevels.length > 0) {
+    //   await saveCompetencyLevels(competencyLevels);
+    // }
 
-    // 6. Fetch and save capabilities
-    console.log("\n🚀 Fetching capabilities...");
-    const capabilities = await fetchWithCookies(`${BASE_URL}/capabilities`);
-    if (capabilities && capabilities.length > 0) {
-      await saveCapabilities(capabilities);
-    }
+    // // 6. Fetch and save capabilities
+    // console.log("\n🚀 Fetching capabilities...");
+    // const capabilities = await fetchWithCookies(`${BASE_URL}/capabilities`);
+    // if (capabilities && capabilities.length > 0) {
+    //   await saveCapabilities(capabilities);
+    // }
 
     // 7. Fetch and save competencies with detailed data
-    console.log("\n🚀 Fetching competencies...");
-    const competencies = await fetchWithCookies(`${BASE_URL}/competencies`);
-    if (competencies && competencies.length > 0) {
-      await saveCompetencies(competencies);
-    }
+    // console.log("\n🚀 Fetching competencies...");
+    // const competencies = await fetchWithCookies(`${BASE_URL}/competencies`);
+    // if (competencies && competencies.length > 0) {
+    //   await saveCompetencies(competencies);
+    // }
 
     // 8. Fetch and save archetypes with detailed data
     console.log("\n🚀 Fetching archetypes...");

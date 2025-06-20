@@ -320,7 +320,6 @@ export const archetypeExpectation = pgTable("ArchetypeExpectation", {
   competencyLevelId: varchar("competency_level_id", { length: 255 })
     .notNull()
     .references(() => competencyLevel.id),
-  behavior: text("behavior").notNull(),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });

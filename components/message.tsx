@@ -212,6 +212,8 @@ const PurePreviewMessage = ({
                           result={result}
                           isReadonly={isReadonly}
                         />
+                      ) : toolName === 'queryDatabase' ? (
+                        <QueryResult result={result} />
                       ) : (
                         <pre>{JSON.stringify(result, null, 2)}</pre>
                       )}
@@ -250,6 +252,10 @@ export const PreviewMessage = memo(
     return true;
   },
 );
+
+export const QueryResult = ({ result }: { result: any }) => {
+  return <pre>{JSON.stringify(result, null, 2)}</pre>;
+};
 
 export const ThinkingMessage = () => {
   const role = 'assistant';

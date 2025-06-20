@@ -16,7 +16,6 @@ CREATE TABLE IF NOT EXISTS "ArchetypeExpectation" (
 	"archetype_id" varchar(255) NOT NULL,
 	"competency_id" varchar(255) NOT NULL,
 	"competency_level_id" varchar(255) NOT NULL,
-	"behavior" text NOT NULL,
 	"created_at" timestamp DEFAULT now() NOT NULL,
 	"updated_at" timestamp DEFAULT now() NOT NULL
 );

@@ -1,5 +1,5 @@
-import type { ArtifactKind } from '@/components/artifact';
-import type { Geo } from '@vercel/functions';
+import type { ArtifactKind } from "@/components/artifact";
+import type { Geo } from "@vercel/functions";
 
 export const artifactsPrompt = `
 Artifacts is a special user interface mode that helps users with writing, editing, and other content creation tasks. When artifact is open, it is on the right side of the screen, while the conversation is on the left side. When creating or updating documents, changes are reflected in real-time on the artifacts and visible to the user.
@@ -33,13 +33,35 @@ Do not update document right after creating it. Wait for user feedback or reques
 `;
 
 export const regularPrompt =
-  'You are a friendly assistant! Keep your responses concise and helpful.';
+  "You are a friendly career framework assistant. You have ability to query the database to get information about the career framework of Thoughtworks. All other assistant should be disabled.";
+
+export const queryDatabasePrompt = `
+You have ability to query the database to get information about the career framework of Thoughtworks.
+Ask user for input like role, what is their position, ask them to provide more context on what they are working on.
+For database tables, use double quotes for table name and first letter of the table name in uppercase. For example, use "Archetype" instead of archetype.
+
+// Relationships
+
+// Archetype
+//  ├── services: Service[]
+//  │     ├── serviceLines: ServiceLine[]
+//  │     ├── archetypes: Archetype[] 🔁
+//  │     └── capabilities: Capability[]
+//  │           ├── capabilityType: CapabilityType
+//  │           └── competencies: Competency[]
+//  │                 ├── competency_group: CompetencyGroup
+//  │                 └── competency_level: CompetencyLevelBehavior[]
+//  │                       └── competency_level: CompetencyLevel
+//  └── archetype_expectations: ArchetypeExpectation[]
+//        ├── competency: Competency
+//        └── competency_level: CompetencyLevel
+`;
 
 export interface RequestHints {
-  latitude: Geo['latitude'];
-  longitude: Geo['longitude'];
-  city: Geo['city'];
-  country: Geo['country'];
+  latitude: Geo["latitude"];
+  longitude: Geo["longitude"];
+  city: Geo["city"];
+  country: Geo["country"];
 }
 
 export const getRequestPromptFromHints = (requestHints: RequestHints) => `\
@@ -59,10 +81,10 @@ export const systemPrompt = ({
 }) => {
   const requestPrompt = getRequestPromptFromHints(requestHints);
 
-  if (selectedChatModel === 'chat-model-reasoning') {
-    return `${regularPrompt}\n\n${requestPrompt}`;
+  if (selectedChatModel === "chat-model-reasoning") {
+    return `${regularPrompt}\n\n${requestPrompt}\n\n${queryDatabasePrompt}`;
   } else {
-    return `${regularPrompt}\n\n${requestPrompt}\n\n${artifactsPrompt}`;
+    return `${regularPrompt}\n\n${requestPrompt}\n\n${artifactsPrompt}\n\n${queryDatabasePrompt}`;
   }
 };
 
@@ -98,24 +120,24 @@ You are a spreadsheet creation assistant. Create a spreadsheet in csv format bas
 
 export const updateDocumentPrompt = (
   currentContent: string | null,
-  type: ArtifactKind,
+  type: ArtifactKind
 ) =>
-  type === 'text'
+  type === "text"
     ? `\
 Improve the following contents of the document based on the given prompt.
 
 ${currentContent}
 `
-    : type === 'code'
-      ? `\
+    : type === "code"
+    ? `\
 Improve the following code snippet based on the given prompt.
 
 ${currentContent}
 `
-      : type === 'sheet'
-        ? `\
+    : type === "sheet"
+    ? `\
 Improve the following spreadsheet based on the given prompt.
 
 ${currentContent}
 `
-        : '';
+    : "";
