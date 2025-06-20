@@ -25,7 +25,7 @@ const db = drizzle(connection);
 // Add your cookies here - copy from browser dev tools
 const COOKIES =
   process.env.CAPABLE_COOKIES ||
-  `_pk_id.34.7f86=df4187f49dece6e1.1750146364.; _gid=GA1.2.377795281.1750255985; _ga_RN24SMN5LX=GS2.1.s1750255984$o47$g0$t1750257526$j60$l0$h0; _ga=GA1.2.951462832.1735800728; _ga_4PMZZ3YZW8=GS2.1.s1750325060$o4$g1$t1750325123$j60$l0$h0; _ga_ZK29164C94=GS2.1.s1750325060$o4$g1$t1750325127$j60$l0$h0; connect.sid=s%3Apmfi9m3HrOY4zNaiso9yvCEooNnAI03f.7bwQ4n58LXpBO0ZczywEdJEfnY9D4Bmy6wpHdUBr868`;
+  `_pk_id.34.7f86=df4187f49dece6e1.1750146364.; _ga_RN24SMN5LX=GS2.1.s1750255984$o47$g0$t1750257526$j60$l0$h0; _ga=GA1.2.951462832.1735800728; _ga_4PMZZ3YZW8=GS2.1.s1750325060$o4$g1$t1750325123$j60$l0$h0; _ga_ZK29164C94=GS2.1.s1750325060$o4$g1$t1750325127$j60$l0$h0; connect.sid=s%3A_BPOuypYSVXISc-qRlj7_LeYZ6WPgVm7.p0AQP0eXK7xUoD%2F26BzhVPsElLrLJyEq06VWPsATuw0; _pk_ses.34.7f86=1`;
 
 const BASE_URL = "https://capable.thoughtworks.net/api";
 
@@ -197,8 +197,7 @@ async function saveCapabilities(items: any[]) {
 
 async function saveCompetencies(items: any[]) {
   console.log(`💾 Saving ${items.length} competencies...`);
-
-  for (const item of items) {
+  const all = items.map(async (item) => {
     try {
       // First fetch detailed competency data
       const detailedCompetency = await fetchWithCookies(
@@ -219,20 +218,17 @@ async function saveCompetencies(items: any[]) {
           .onConflictDoNothing();
 
         // Save competency level behaviors
-        if (
-          detailedCompetency.competency_level &&
-          Array.isArray(detailedCompetency.competency_level)
-        ) {
-          for (const levelBehavior of detailedCompetency.competency_level) {
+        if (Array.isArray(detailedCompetency.competency_level_behaviours)) {
+          for (const levelBehavior of detailedCompetency.competency_level_behaviours) {
             try {
               await db
                 .insert(competencyLevelBehavior)
                 .values({
-                  competencyId: detailedCompetency.id,
+                  competencyId: detailedCompetency.identifier,
                   competencyLevelId:
                     levelBehavior.competency_level?.id ||
                     levelBehavior.competency_level_id,
-                  behavior: levelBehavior.behavior,
+                  behavior: levelBehavior.behaviour,
                 })
                 .onConflictDoNothing();
             } catch (error) {
@@ -252,7 +248,8 @@ async function saveCompetencies(items: any[]) {
     } catch (error) {
       console.error(`❌ Error saving competency ${item.id}:`, error);
     }
-  }
+  });
+  await Promise.all(all);
 }
 
 async function saveArchetypes(items: any[]) {
@@ -399,18 +396,18 @@ async function main() {
     // }
 
     // 7. Fetch and save competencies with detailed data
-    // console.log("\n🚀 Fetching competencies...");
-    // const competencies = await fetchWithCookies(`${BASE_URL}/competencies`);
-    // if (competencies && competencies.length > 0) {
-    //   await saveCompetencies(competencies);
-    // }
+    console.log("\n🚀 Fetching competencies...");
+    const competencies = await fetchWithCookies(`${BASE_URL}/competencies`);
+    if (competencies && competencies.length > 0) {
+      await saveCompetencies(competencies);
+    }
 
     // 8. Fetch and save archetypes with detailed data
-    console.log("\n🚀 Fetching archetypes...");
-    const archetypes = await fetchWithCookies(`${BASE_URL}/archetypes`);
-    if (archetypes && archetypes.length > 0) {
-      await saveArchetypes(archetypes);
-    }
+    // console.log("\n🚀 Fetching archetypes...");
+    // const archetypes = await fetchWithCookies(`${BASE_URL}/archetypes`);
+    // if (archetypes && archetypes.length > 0) {
+    //   await saveArchetypes(archetypes);
+    // }
 
     console.log("\n🎉 Crawling completed successfully!");
   } catch (error) {

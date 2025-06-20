@@ -300,7 +300,7 @@ export const competencyLevelBehavior = pgTable("CompetencyLevelBehavior", {
   competencyLevelId: varchar("competency_level_id", { length: 255 })
     .notNull()
     .references(() => competencyLevel.id),
-  behavior: text("behavior").notNull(),
+  behavior: text("behavior"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });

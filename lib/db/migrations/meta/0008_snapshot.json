@@ -565,8 +565,7 @@
         "behavior": {
           "name": "behavior",
           "type": "text",
-          "primaryKey": false,
-          "notNull": true
+          "primaryKey": false
         },
         "created_at": {
           "name": "created_at",
