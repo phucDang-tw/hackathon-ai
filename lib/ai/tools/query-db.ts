@@ -72,7 +72,6 @@ Database contains roles, skills, services and their relationships.`,
         console.log("Executing query", sql_query);
         const results = await db.execute(sql.raw(sql_query));
 
-        console.log("Query results 0", results);
         dataStream.writeData({
           type: "query-results",
           content: JSON.stringify(results, null, 2),
@@ -86,7 +85,6 @@ Database contains roles, skills, services and their relationships.`,
           content: summary,
         });
 
-        console.log("Query results 1", results);
         return {
           query_description,
           sql_query,

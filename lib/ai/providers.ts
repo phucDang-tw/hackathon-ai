@@ -11,6 +11,11 @@ import {
   reasoningModel,
   titleModel,
 } from "./models.test";
+import { createGoogleGenerativeAI } from "@ai-sdk/google";
+
+const google = createGoogleGenerativeAI({
+  apiKey: process.env.GEMINI_API_KEY,
+});
 
 export const myProvider = isTestEnvironment
   ? customProvider({
@@ -23,7 +28,7 @@ export const myProvider = isTestEnvironment
     })
   : customProvider({
       languageModels: {
-        "chat-model": xai("grok-3-mini"),
+        "chat-model": google("gemini-2.0-flash-lite"),
         "chat-model-reasoning": wrapLanguageModel({
           model: xai("grok-3-mini"),
           middleware: extractReasoningMiddleware({ tagName: "think" }),
