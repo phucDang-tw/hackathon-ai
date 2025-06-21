@@ -80,7 +80,8 @@ export const textArtifact = new Artifact<'text', TextArtifactMetadata>({
 
     return (
       <>
-        <div className="flex flex-row py-8 md:p-20 px-4">
+        <div className="grid grid-cols-5 py-8 md:p-20 px-4">
+          <div className="col-span-5 md:col-span-4">
           <Editor
             content={content}
             suggestions={metadata ? metadata.suggestions : []}
@@ -89,11 +90,12 @@ export const textArtifact = new Artifact<'text', TextArtifactMetadata>({
             status={status}
             onSaveContent={onSaveContent}
           />
+          </div>
 
           {metadata &&
           metadata.suggestions &&
           metadata.suggestions.length > 0 ? (
-            <div className="md:hidden h-dvh w-12 shrink-0" />
+            <div className="md:hidden h-dvh w-12 shrink-0 md:col-span-1 col-span-5" />
           ) : null}
         </div>
       </>
